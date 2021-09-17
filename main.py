@@ -16,9 +16,22 @@ COLOUR_CYAN = 6
 COLOUR_WHITE = 7
 '''
 
-# TODO: Machine learning for stock price prediction
+def get_config(filename = None):
+	filename = 'config.txt' if filename is None else filename
+	options = {}
+	with open(filename) as file:
+		for line in file:
+			if line[0] == ';' or line[0] == '\n':
+				continue
+			setting, value = line.strip().split('=')
+			setting = setting.strip()
+			value = value.strip()
+			options[setting] = value
+	return options
+
+options = get_config()
 api_key = ''
-if os.path.exists('api.key'):
+if os.path.exists(options['api_key_file']):
 	with open('api.key') as file:
 		for line in file:
 			api_key = line
@@ -26,13 +39,16 @@ else:
 	api_key = None
 header = {'X-FinnHub-Token' : api_key}
 
+
 # Get List of stocks
 # 
 class Stocks():
 	def __init__(self, filename = None):
-		filename = 'stock_list.txt' if filename == None else filename
+		self.options = options
+		filename = options['stock_list_file'] if filename is None else filename
 		self.stock_list = self.get_stock_list(filename)
 		self.filename = filename
+
 	def get_stock_list_info(self):
 		stock_prices = []
 		for x in range(len(self.stock_list)):
@@ -112,7 +128,7 @@ def add_key(button):
 	done = urwid.Button('Done')
 	def _add_key(edit):
 		key = api_key.get_edit_text().rstrip()
-		with open('api.key', 'w+') as file:
+		with open(stock.options['api_key_file'], 'w+') as file:
 			file.write(key)
 		main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
 		header['X-FinnHub-Token'] = key

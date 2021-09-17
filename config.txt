@@ -1,0 +1,4 @@
+; File to save the list of stocks
+stock_list_file = stock_list.txt
+; File containing your api.key
+api_key_file = api.key
