@@ -45,6 +45,7 @@ header = {'X-FinnHub-Token' : api_key}
 class Stocks():
 	def __init__(self, filename = None):
 		self.options = options
+		print(options['stock_list_file'])
 		filename = options['stock_list_file'] if filename is None else filename
 		self.stock_list = self.get_stock_list(filename)
 		self.filename = filename
@@ -64,7 +65,7 @@ class Stocks():
 	def get_stock_list(self, file = None):
 		filename = 'stock_list.txt' if file == None else file
 		stocks = []
-		with open(filename, 'a+') as f:
+		with open(filename, 'r') as f:
 			for stock in f:
 				stocks.append(stock.rstrip().upper())
 		return stocks
@@ -128,7 +129,7 @@ def add_key(button):
 	done = urwid.Button('Done')
 	def _add_key(edit):
 		key = api_key.get_edit_text().rstrip()
-		with open(stock.options['api_key_file'], 'w+') as file:
+		with open(options['api_key_file'], 'w+') as file:
 			file.write(key)
 		main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
 		header['X-FinnHub-Token'] = key
@@ -197,7 +198,7 @@ def exit_program(button):
 	raise urwid.ExitMainLoop()
 
 def exit_on_q(key):
-	if key in ('q', 'Q'):
+	if key in ('q', 'Q', 'esc'):
 		raise urwid.ExitMainLoop()
 if __name__ == '__main__':
 	main = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
