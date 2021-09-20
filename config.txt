@@ -1,4 +1,0 @@
-; File to save the list of stocks
-stock_list_file = stock_list.txt
-; Your api key
-api_key = c51mi1aad3i9nnburi10
