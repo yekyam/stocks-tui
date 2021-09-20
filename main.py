@@ -2,6 +2,7 @@ import urwid
 import os
 from stock import Stock
 from cfg import get_config
+from cfg import set_option
 
 options = get_config()
 header = {'X-FinnHub-Token' : options['api_key']}
@@ -12,8 +13,7 @@ def add_key(button):
 	done = urwid.Button('Done')
 	def _add_key(edit):
 		key = api_key.get_edit_text().rstrip()
-		with open(options['api_key_file'], 'w+') as file:
-			file.write(key)
+		set_option('api_key', key)
 		main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
 		header['X-FinnHub-Token'] = key
 	urwid.connect_signal(done, 'click', _add_key,)
