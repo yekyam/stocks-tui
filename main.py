@@ -2,10 +2,9 @@ import urwid
 import os
 from stock import Stock
 from cfg import get_config
-from api_key import get_key
 
 options = get_config()
-header = {'X-FinnHub-Token' : get_key(options['api_key_file'])}
+header = {'X-FinnHub-Token' : options['api_key']}
 stock = Stock(options, header)
 
 def add_key(button):
@@ -31,7 +30,7 @@ def item_chosen(button, choice):
 	urwid.connect_signal(back, 'click', back_to_menu)
 	remove = urwid.Button('Remove Stock')
 	urwid.connect_signal(remove, 'click', remove_stock, choice)
-	main.original_widget = urwid.Filler(urwid.Pile([response, urwid.Divider(), urwid.AttrMap(remove, None, focus_map='reversed'), urwid.AttrMap(back, None, focus_map='reversed')]))
+	main.original_widget = urwid.Filler(urwid.Pile([response, urwid.Divider(), urwid.AttrMap(back, None, focus_map='reversed'), urwid.AttrMap(remove, None, focus_map='reversed')]))
 
 def clear_stocks(button):
 	stock.stock_list = []
@@ -53,15 +52,13 @@ def add_stock(button):
 		new_stock_symbol = new_stock.get_edit_text().strip().upper()
 		if new_stock_symbol in stock.stock_list:
 			reply.set_text('Stock already in list!')
-			return
-		try:
-			stock.get_stock_info(new_stock_symbol)
+		elif stock.get_stock_info(new_stock_symbol) == 'No stock found':
+			reply.set_text('Invalid stock Symbol!')
+		else:
 			with open(stock.filename, 'a') as file:
 				file.write(new_stock_symbol + '\n')
 			stock.stock_list.append(new_stock_symbol)
-			main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
-		except:
-			reply.set_text('Invalid stock Symbol!')
+			reply.set_text(f'{new_stock_symbol} added')
 	urwid.connect_signal(done, 'click', _add_stock)
 	back = urwid.Button('Back')
 	urwid.connect_signal(back, 'click', back_to_menu)

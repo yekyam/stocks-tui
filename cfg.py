@@ -8,5 +8,8 @@ def get_config(filename = None):
 			setting, value = line.strip().split('=')
 			setting = setting.strip()
 			value = value.strip()
+			if setting == 'api_key' and value == '':
+				options[setting] = None
+				return
 			options[setting] = value
 	return options
