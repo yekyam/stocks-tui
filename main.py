@@ -9,9 +9,19 @@ header = {'X-FinnHub-Token' : config['Settings']['api_key']}
 stock = Stock(config, header)
 
 def add_key(button):
+	'''Displays area for the user to type in key
+
+	:param button: An urwid button
+	:type button: urwid.Button
+	'''
 	api_key = urwid.Edit('Go to https://finnhub.io/, then paste your API Key here:\n')
 	done = urwid.Button('Done')
 	def _add_key(edit):
+		'''Adds the user's key to the config file
+		
+		:param edit: The edit widget 
+		:type edit: urwid.Edit
+		'''
 		key = api_key.get_edit_text().rstrip()
 		config['Settings']['api_key'] = key
 		header['X-FinnHub-Token'] = key
@@ -27,6 +37,12 @@ def add_key(button):
 			]))
 
 def item_chosen(button, choice):
+	'''Displays the stock chosen and it's info
+	:param button: An urwid button
+	:type button: urwid.Button
+	:param choice: The stock chosen
+	:type choice: str
+	'''
 	response = urwid.Text(stock.get_stock_info(choice))
 	back = urwid.Button('Done')
 	urwid.connect_signal(back, 'click', back_to_menu)
@@ -35,18 +51,32 @@ def item_chosen(button, choice):
 	main.original_widget = urwid.Filler(urwid.Pile([response, urwid.Divider(), urwid.AttrMap(back, None, focus_map='reversed'), urwid.AttrMap(remove, None, focus_map='reversed')]))
 
 def clear_stocks(button):
+	'''Clears the stocks from the stock list and stock_list_file
+	:param button: An urwid button
+	:type button: urwid.Button
+	'''
 	stock.stock_list = []
 	with open(stock.filename, 'w') as file:
 		pass
 	main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
+
 def remove_stock(button, choice):
+	'''Removes a specific stock from the stock list and the stock_list_file
+	:param button: An urwid button
+	:type button: urwid.Button
+	:param choice: The specific stock to remove
+	:type choice: str
+	'''
 	stock.stock_list.remove(choice)
 	with open(stock.filename, 'w') as file:
-		for _stock in stock.stock_list:
-			file.write(_stock + '\n')
+		file.write('\n'.join(stock.stock_list))
 	main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
 
 def add_stock(button):
+	'''Adds a stock to the stock list and the stock_list_file
+	:param button: An urwid Button
+	:type button: urwid.Button
+	'''
 	new_stock = urwid.Edit('Enter a stock Symbol:\n$')
 	done = urwid.Button('Add Stock')
 	reply = urwid.Text(u'')
@@ -77,12 +107,23 @@ def add_stock(button):
 
 
 def back_to_menu(button):
+	'''Shows the menu view
+	:param button: An urwid button
+	:type button: urwid.Button'''
 	main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
 
 def exit_program(button):
+	'''Exits the program
+	:param button: An urwid button
+	:type button: urwid.Button
+	'''
 	raise urwid.ExitMainLoop()
 
 def exit_on_q(key):
+	'''Exits the program if q, Q, or esc is pressed
+	:param key: The key pressed
+	:type key: str
+	'''
 	if key in ('q', 'Q', 'esc'):
 		raise urwid.ExitMainLoop()
 
@@ -90,6 +131,12 @@ menu_items = 'Add Stock,Add API Key,Clear All Stocks,Exit'.split(',')
 menu_items_callbacks = [add_stock, add_key, clear_stocks, exit_program]
 
 def menu(title, choices):
+	'''Shows the menu and it's options
+	:param title: The menu's title
+	:type title: str
+	:param choices: The list of available stocks
+	:type choices: list:str
+	'''
 	body = [urwid.Text(title), urwid.Divider()]
 	for option in choices:
 		button = urwid.Button(option)
