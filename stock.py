@@ -1,12 +1,11 @@
+import configparser
 import requests as r
 import json
-from api_key import get_key
-
 
 class Stock():
-	def __init__(self, options, header):
-		self.options = options
-		self.filename = options['stock_list_file']
+	def __init__(self, config, header):
+		self.config = config
+		self.filename = config['Settings']['stock_list_file']
 		self.stock_list = []
 		with open(self.filename, 'r') as f:
 			for stock in f:
@@ -18,8 +17,8 @@ class Stock():
 
 	def _get_stock_price(self, stock_name = None):
 		stock_name = 'AAPL' if stock_name is None else stock_name
-		if self.header['X-FinnHub-Token'] == None:
-			return ('None', 'Setup your API Token' )
+		if self.header['X-FinnHub-Token'] == '':
+			return ('None', 'Setup your API token' )
 		request = r.get(f'https://finnhub.io/api/v1/quote?symbol={stock_name}', headers = self.header)
 		request_json = json.loads(request.content)
 		'''

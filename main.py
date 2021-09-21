@@ -1,19 +1,19 @@
 import urwid
 import os
 from stock import Stock
-from cfg import get_config
-from cfg import set_option
+import configparser
 
-options = get_config()
-header = {'X-FinnHub-Token' : options['api_key']}
-stock = Stock(options, header)
+config = configparser.ConfigParser()
+config.read('config.ini')
+header = {'X-FinnHub-Token' : config['Settings']['api_key']}
+stock = Stock(config, header)
 
 def add_key(button):
 	api_key = urwid.Edit('Go to https://finnhub.io/, then paste your API Key here:\n')
 	done = urwid.Button('Done')
 	def _add_key(edit):
 		key = api_key.get_edit_text().rstrip()
-		set_option('api_key', key)
+		config['Settings']['api_key'] = api_key
 		main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
 		header['X-FinnHub-Token'] = key
 	urwid.connect_signal(done, 'click', _add_key,)
@@ -54,6 +54,8 @@ def add_stock(button):
 			reply.set_text('Stock already in list!')
 		elif stock.get_stock_info(new_stock_symbol) == 'No stock found':
 			reply.set_text('Invalid stock Symbol!')
+		elif stock.get_stock_info(new_stock_symbol) == 'Setup your API token':
+			reply.set_text('Setup your API key to add stocks')
 		else:
 			with open(stock.filename, 'a') as file:
 				file.write(new_stock_symbol + '\n')
