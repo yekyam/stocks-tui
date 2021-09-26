@@ -1,2 +1,1 @@
-from stock import Stock
-from stocks_tui import *
+import stocks_tui.stock
