@@ -12,10 +12,8 @@ class Stock():
 		'''
 		self.config = config
 		self.filename = config['Settings']['stock_list_file']
-		self.stock_list = []
 		with open(self.filename, 'r') as f:
-			for stock in f:
-				self.stock_list.append(stock.strip().upper())
+			self.stock_list = [stock.strip().upper() for stock in f]
 		self.header = header
 	
 	def get_stock_info(self, stock_name):
