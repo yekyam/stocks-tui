@@ -6,12 +6,12 @@ import configparser
 
 def get_config():
 	config = configparser.ConfigParser()
-	if exists('stocks_tui/config.ini'):
-		config.read('stocks_tui/config.ini')
+	if exists('config.ini'):
+		config.read('config.ini')
 		return config
 	else:
-		config['Settings'] = {'api_key': '', 'stock_list_file' : 'stocks_tui/stock_list.txt'}
-		with open('stocks_tui/config.ini', 'w') as file:
+		config['Settings'] = {'api_key': '', 'stock_list_file' : 'stock_list.txt'}
+		with open('config.ini', 'w') as file:
 			config.write(file)
 		return config
 
