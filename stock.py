@@ -13,7 +13,7 @@ class Stock():
 		'''
 		self.config = config
 		self.filename = config['Settings']['stock_list_file']
-		if os.path.exists(self.filename):
+		if os.path.isfile(self.filename):
 			with open(self.filename, 'r') as f:
 				self.stock_list = [stock.strip().upper() for stock in f]
 		else:
