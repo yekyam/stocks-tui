@@ -1,6 +1,7 @@
 import configparser
 import requests as r
 import json
+import os
 
 class Stock():
 	def __init__(self, config, header):
@@ -12,10 +13,14 @@ class Stock():
 		'''
 		self.config = config
 		self.filename = config['Settings']['stock_list_file']
-		with open(self.filename, 'r') as f:
-			self.stock_list = [stock.strip().upper() for stock in f]
+		if os.path.exists(self.filename):
+			with open(self.filename, 'r') as f:
+				self.stock_list = [stock.strip().upper() for stock in f]
+		else:
+			with open(self.filename, 'w') as f:
+				self.stock_list = []
 		self.header = header
-	
+
 	def get_stock_info(self, stock_name):
 		'''Gets the info of a specified stock
 		:param stock_name: The name of the stock

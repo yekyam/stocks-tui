@@ -1,10 +1,21 @@
 import urwid
 import os
-from stock import Stock
+from os.path import exists
+from stocks_tui.stock import Stock
 import configparser
 
-config = configparser.ConfigParser()
-config.read('config.ini')
+def get_config():
+	config = configparser.ConfigParser()
+	if exists('stocks_tui/config.ini'):
+		config.read('stocks_tui/config.ini')
+		return config
+	else:
+		config['Settings'] = {'api_key': '', 'stock_list_file' : 'stocks_tui/stock_list.txt'}
+		with open('stocks_tui/config.ini', 'w') as file:
+			config.write(file)
+		return config
+
+config = get_config()
 header = {'X-FinnHub-Token' : config['Settings']['api_key']}
 stock = Stock(config, header)
 
@@ -25,7 +36,7 @@ def add_key(button):
 		key = api_key.get_edit_text().rstrip()
 		config['Settings']['api_key'] = key
 		header['X-FinnHub-Token'] = key
-		with open('config.ini', 'w') as file:
+		with open('stocks_tui/config.ini', 'w') as file:
 			config.write(file)
 		main.original_widget = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
 	urwid.connect_signal(done, 'click', _add_key,)
@@ -149,7 +160,8 @@ def menu(title, choices):
 		body.append(urwid.AttrMap(button, None, focus_map='reversed'))
 	return urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
-
+def main():
+	pass
 if __name__ == '__main__':
 	main = urwid.Padding(menu('Stocks', stock.stock_list), left=2, right=2)
 	top = urwid.Overlay(main, urwid.SolidFill(u'\N{MEDIUM SHADE}'), 
